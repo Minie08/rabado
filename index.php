@@ -117,7 +117,7 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
 
 <div class="container-fluid px-2 mb-2 mt-3">
     <div class="d-flex flex-wrap justify-content-between align-items-center header-row">
-        <h5 class="ms-5">Kategorier</h5>
+        <h5>Kategorier</h5>
         <div class="switch-container">
             <button id="btn-rabatkoder" class="btn switch-btn <?= $type==='rabatkoder' ? 'active' : '' ?>">Rabatkoder</button>
             <button id="btn-tilbud" class="btn switch-btn <?= $type==='tilbud' ? 'active' : '' ?>">Tilbud</button>
