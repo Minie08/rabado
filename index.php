@@ -113,7 +113,9 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
     </div>
 </div>
 
-<div class="divider mt-5 mb-2"></div>
+<div>
+    <div class="divider"></div>
+</div>
 
 <div class="container-fluid px-2 mb-2 mt-3">
     <div class="d-flex flex-wrap justify-content-between align-items-center header-row">
@@ -193,7 +195,9 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
     </div>
 </div>
 
-<div class="divider"></div>
+<div>
+    <div class="divider"></div>
+</div>
 
 <?php include("includes/footer.php");?>
 

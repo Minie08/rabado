@@ -207,15 +207,6 @@ body {
   margin: 12px auto;
 }
 
-.divider {
-  display: block;
-  width: 95%;
-  height: 1px;
-  background-color: #805FA1;
-  border-radius: 1px;
-  margin: 2rem auto;
-}
-
 .switch-container {
   display: flex;
   gap: 0.5rem;
@@ -391,6 +382,13 @@ body {
     max-width: 100px;
     max-height: 60px;
   }
+}
+
+.divider {
+  width: 95%;
+  height: 1px;
+  margin: 2rem auto;
+  background: linear-gradient(to right, transparent, #805FA1, transparent);
 }
 
 .footer {
