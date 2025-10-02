@@ -200,7 +200,7 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
 </div>
 
 <div class="text-center">
-    <h5>
+    <h5 class="text-muted">
         Fandt du ikke hvad du søgte? <br>
         Tilføj din rabatkode og del den med andre.
     </h5>
@@ -208,6 +208,30 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
     <button class="btn btn-outline-lilla mt-3 mb-5" data-bs-toggle="modal" data-bs-target="#addDiscountModal">
         Tilføj
     </button>
+</div>
+
+<!-- Modal til "tilføj" knappen-->
+<div class="modal fade" id="addDiscountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="discountForm" class="modal-content p-3">
+            <h5 class="text-center mb-3">Tilføj rabatkode</h5>
+            <input class="form-control mb-2" name="rabaTitel" placeholder="Titel" required>
+            <textarea class="form-control mb-2" name="rabaBeskrivelse" placeholder="Beskrivelse" required></textarea>
+            <input class="form-control mb-2" name="rabaKode" placeholder="Kode" required>
+            <input class="form-control mb-2" name="rabaSats" placeholder="Sats">
+            <input type="date" class="form-control mb-2" name="rabaStart">
+            <input type="date" class="form-control mb-2" name="rabaUdloeb">
+            <input class="form-control mb-2" name="virkId" placeholder="Virksomhedsnavn" required>
+            <select class="form-select mb-2" name="kateId" required>
+                <option value="">Vælg kategori</option>
+                <?php foreach($kategorier as $k): ?>
+                    <option value="<?= $k->id ?>"><?= htmlspecialchars($k->kateNavn) ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <button type="submit" class="btn btn-outline-lilla mt-2">Tilføj nu</button>
+        </form>
+    </div>
 </div>
 
 <?php include("includes/footer.php");?>
