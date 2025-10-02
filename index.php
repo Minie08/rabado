@@ -230,6 +230,7 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
             </select>
 
             <button type="submit" class="btn btn-outline-lilla mt-2">Tilføj nu</button>
+            <div id="discountFormMsg" class="mt-3 text-center"></div>
         </form>
     </div>
 </div>
@@ -256,13 +257,13 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
         let currentType = "<?= isset($type) ? $type : '' ?>";
         let currentCategory = "<?= isset($kategoriId) ? $kategoriId : '' ?>";
 
-        // Skjuler søgeresultat, når der klikke inde i inputfeltet //
+        // Skjuler søgeresultat, når der klikkes inde i inputfeltet //
         searchInput.addEventListener('focus', () => {
             resultsBox.style.display = "none"; // skjul dropdown
             searchContainer.innerHTML = "";    // skjul søgeresultat-kortene
         });
 
-        // Viser brugeren hvornår rabatkoden sidst blev anvendt //
+        // Viser hvornår rabatkoden sidst blev anvendt //
         function timeSince(ms) {
             if (!ms) return 'Ikke anvendt endnu';
             const seconds = Math.floor((Date.now() - ms) / 1000);
@@ -381,7 +382,7 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
                     dealsContainer.appendChild(col);
                 });
 
-                // opdater anvendt-tekster i de nye cards
+                // opdater "sidst anvendt" i de cards //
                 updateUsedLabels(dealsContainer);
             } catch (err) {
                 console.error("Fejl ved indlæsning af deals:", err);
@@ -551,7 +552,7 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
 
                 searchContainer.appendChild(rowWrapper);
 
-                // Tilføj copy-event listeners til de nye knapper
+                // copy-event er også tilføjet i søgefeltet //
                 searchContainer.querySelectorAll('.copy-btn').forEach(btn => {
                     btn.addEventListener('click', async (ev) => {
                         const code = btn.getAttribute('data-code');
@@ -596,8 +597,44 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
         });
 
         loadDeals();
-
         updateUsedLabels();
+
+        // Viser succes/fejl ved klik på "tilføj" btn. //
+        const discountForm = document.getElementById('discountForm');
+        const discountFormMsg = document.getElementById('discountFormMsg');
+
+        if(discountForm){
+            discountForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                discountFormMsg.innerHTML = '';
+
+                const formData = new FormData(discountForm);
+
+                try {
+                    const res = await fetch('addDiscount.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        discountFormMsg.innerHTML = '<span class="text-success fw-bold">Rabatkode tilføjet!</span>';
+                        loadDeals();
+                        setTimeout(() => {
+                            const modalEl = document.getElementById('addDiscountModal');
+                            const modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) modal.hide();
+                        }, 1500);
+                    } else {
+                        discountFormMsg.innerHTML = `<span class="text-danger fw-bold">${data.message || 'Fejl ved tilføjelse'}</span>`;
+                    }
+                } catch (err) {
+                    discountFormMsg.innerHTML = `<span class="text-danger fw-bold">Fejl ved tilføjelse</span>`;
+                    console.error(err);
+                }
+            });
+        }
+
     });
 </script>
 </body>
