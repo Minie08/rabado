@@ -215,13 +215,18 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
     <div class="modal-dialog">
         <form id="discountForm" class="modal-content p-3">
             <h5 class="text-center mb-3">Tilføj rabatkode</h5>
+
             <input class="form-control mb-2" name="rabaTitel" placeholder="Titel" required>
             <textarea class="form-control mb-2" name="rabaBeskrivelse" placeholder="Beskrivelse" required></textarea>
             <input class="form-control mb-2" name="rabaKode" placeholder="Kode" required>
             <input class="form-control mb-2" name="rabaSats" placeholder="Sats">
             <input type="date" class="form-control mb-2" name="rabaStart">
             <input type="date" class="form-control mb-2" name="rabaUdloeb">
-            <input class="form-control mb-2" name="virkId" placeholder="Virksomhedsnavn" required>
+
+            <input class="form-control mb-2" name="virkNavn" placeholder="Virksomhedsnavn" required>
+            <input class="form-control mb-2" name="virkLink" placeholder="Virksomhedslink">
+            <input class="form-control mb-2" name="virkLogo" placeholder="Virksomhedslogo (URL)">
+
             <select class="form-select mb-2" name="kateId" required>
                 <option value="">Vælg kategori</option>
                 <?php foreach($kategorier as $k): ?>
