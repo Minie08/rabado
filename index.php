@@ -105,7 +105,7 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
     <form method="get" action="search.php" class="search-box">
         <label for="search-input" class="visually-hidden">Søg rabatkoder på siden</label>
         <input type="text" id="search-input" name="q" class="form-control">
-        <button type="submit" class="btn btn-lilla shadow-sm">Søg</button>
+        <button type="submit" class="btn btn-lilla shadow-sm"><i class="bi bi-search"></i></button>
     </form>
 
     <div id="search-results-container" class="mt-2 mx-auto">
