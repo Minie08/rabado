@@ -8,15 +8,15 @@ header("Content-Type: application/json");
 
 if (!empty($_POST)) {
     $data = [
-        ":rabaBillede" => "-",
-        ":rabaTitel" => $_POST["rabaTitel"],
-        ":virkId" => $_POST["virkId"],
-        ":rabaBeskrivelse" => $_POST["rabaBeskrivelse"],
-        ":rabaKode" => $_POST["rabaKode"],
-        ":rabaSats" => $_POST["rabaSats"],
-        ":rabaStart" => $_POST["rabaStart"],
-        ":rabaUdloeb" => $_POST["rabaUdloeb"],
-        ":kateId" => $_POST["kateId"]
+        ":rabaBillede"    => "-", // evt. filupload senere
+        ":rabaTitel"      => $_POST["rabaTitel"],
+        ":virkId"         => $_POST["virkId"],
+        ":rabaBeskrivelse"=> $_POST["rabaBeskrivelse"],
+        ":rabaKode"       => $_POST["rabaKode"],
+        ":rabaSats"       => $_POST["rabaSats"],
+        ":rabaStart"      => $_POST["rabaStart"],
+        ":rabaUdloeb"     => $_POST["rabaUdloeb"],
+        ":kateId"         => $_POST["kateId"]
     ];
 
     try {
@@ -26,7 +26,20 @@ if (!empty($_POST)) {
             VALUES (:rabaBillede, :rabaTitel, :virkId, :rabaBeskrivelse, :rabaKode, :rabaSats, :rabaStart, :rabaUdloeb, :kateId)
         ", $data);
 
-        echo json_encode(["success" => true]);
+        // returner succes og den indsatte kode til JS
+        echo json_encode([
+            "success" => true,
+            "rabatkode" => [
+                "rabaTitel"       => $_POST["rabaTitel"],
+                "rabaBeskrivelse" => $_POST["rabaBeskrivelse"],
+                "rabaKode"        => $_POST["rabaKode"],
+                "rabaSats"        => $_POST["rabaSats"],
+                "rabaStart"       => $_POST["rabaStart"],
+                "rabaUdloeb"      => $_POST["rabaUdloeb"],
+                "virkId"          => $_POST["virkId"],
+                "kateId"          => $_POST["kateId"]
+            ]
+        ]);
     } catch (Exception $e) {
         echo json_encode(["success" => false, "error" => $e->getMessage()]);
     }
