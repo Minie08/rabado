@@ -199,6 +199,14 @@ $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
     <div class="divider"></div>
 </div>
 
+<div class="text-center">
+    <h5>
+        Fandt du ikke hvad du søgte? <br>
+        Tilføj din rabatkode og del den med andre.
+    </h5>
+    <button class="btn btn-outline-lilla mt-3 mb-5">Tilføj</button>
+</div>
+
 <?php include("includes/footer.php");?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
