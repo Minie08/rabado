@@ -310,13 +310,13 @@ $tilbud = $db->sql(
         let currentType = "<?= isset($type) ? $type : '' ?>";
         let currentCategory = "<?= isset($kategoriId) ? $kategoriId : '' ?>";
 
-        // Skjuler søgeresultat, når der klikkes inde i inputfeltet //
+        // Skjuler søgeresultat/dropdown, når der klikkes inde i inputfeltet //
         searchInput.addEventListener('focus', () => {
-            resultsBox.style.display = "none"; // skjul dropdown
-            searchContainer.innerHTML = "";    // skjul søgeresultat-kortene
+            resultsBox.style.display = "none";
+            searchContainer.innerHTML = "";
         });
 
-        // Viser hvornår rabatkoden sidst blev anvendt //
+        // Omregner og viser hvornår rabatkoden sidst blev anvendt //
         function timeSince(ms) {
             if (!ms) return 'Ikke anvendt endnu';
             const seconds = Math.floor((Date.now() - ms) / 1000);
@@ -363,6 +363,7 @@ $tilbud = $db->sql(
                     const card = document.createElement('div');
                     card.className = "discount-card card shadow-sm border-0 rounded-4 p-3 mb-4";
 
+                    // Opretter rabatkode card og viser indhold //
                     if (item.type === 'rabat') {
                         card.innerHTML = `
                         <div class="position-relative text-center logo-wrap">
@@ -382,7 +383,7 @@ $tilbud = $db->sql(
                         </div>
                     `;
 
-                        // Kopier og marker koden som "anvendt" //
+                        // Kopier koden //
                         card.querySelector('.discount-code').addEventListener('click', async (ev) => {
                             const btn = ev.currentTarget;
                             const code = btn.getAttribute('data-code');
@@ -393,6 +394,7 @@ $tilbud = $db->sql(
                             btn.textContent = '✔';
                             setTimeout(() => btn.textContent = old, 2000);
 
+                            // Marker koden som "anvendt" og gemmer i db //
                             if (id) {
                                 try {
                                     const res = await fetch('updateLastUsed.php', {
@@ -413,6 +415,7 @@ $tilbud = $db->sql(
                             }
                         });
 
+                        // Opretter tilbud card og viser indhold)
                     } else { // tilbud
                         card.innerHTML = `
                         <div class="position-relative text-center mb-3">
@@ -441,7 +444,7 @@ $tilbud = $db->sql(
             }
         }
 
-        // Henter den algte type og fremhæver den //
+        // Henter den valgte type og fremhæver den //
         function toggleType(type) {
             currentType = (currentType === type ? '' : type);
             btnRabatkoder.classList.toggle('active', currentType === 'rabatkoder');
@@ -452,7 +455,7 @@ $tilbud = $db->sql(
         btnRabatkoder.addEventListener('click', () => toggleType('rabatkoder'));
         btnTilbud.addEventListener('click', () => toggleType('tilbud'));
 
-        // Kategori knapperne //
+        // Viser "aktiv" kategori //
         categories.forEach(cat => {
             cat.addEventListener('click', () => {
                 currentCategory = (currentCategory === cat.dataset.id ? '' : cat.dataset.id);
@@ -466,15 +469,17 @@ $tilbud = $db->sql(
             clearTimeout(timer);
             const q = searchInput.value.trim();
             resultsBox.style.display = "none";
-            resultsBox.innerHTML = "";
+            resultsBox.innerHTML = ""; // Rydder tidligere resultater //
             if (!q) return;
 
+            // Venter før AJAX-kaldet, så der undgås kald ved hvert tastetryk //
             timer = setTimeout(async () => {
                 try {
-                    const res = await fetch("search.php?q=" + encodeURIComponent(q));
+                    const res = await fetch("search.php?q=" + encodeURIComponent(q)); // Henter søgeresultat //
                     const data = await res.json();
                     if (!data.length) return;
 
+                    // Container oprettes til hvert søgeresultat //
                     data.forEach(item => {
                         const row = document.createElement('div');
                         row.className = 'search-result';
@@ -503,6 +508,7 @@ $tilbud = $db->sql(
                                 copyBtn.textContent = '✔';
                                 setTimeout(() => copyBtn.textContent = old, 2000);
 
+                                // Tjekker også om rabatkoden bliver "anvendt" her //
                                 if (item.id) {
                                     try {
                                         const res2 = await fetch('updateLastUsed.php', {
@@ -542,7 +548,7 @@ $tilbud = $db->sql(
             if (!resultsBox.contains(e.target) && e.target !== searchInput) resultsBox.style.display = 'none';
         });
 
-        // Viser resultater //
+        // Viser resultater ved "submit" //
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const q = searchInput.value.trim();
@@ -558,13 +564,16 @@ $tilbud = $db->sql(
                     return;
                 }
 
+                // Opretter en container til søgeresultaterne //
                 const rowWrapper = document.createElement('div');
                 rowWrapper.className = 'row g-3';
 
                 data.forEach(item => {
+                    // Opretter col til hvert resultat //
                     const col = document.createElement('div');
                     col.className = 'col-6 col-md-4 col-lg-3';
 
+                    // Opretter card inde i col //
                     const card = document.createElement('div');
                     card.className = 'discount-card card shadow-sm border-0 rounded-4 p-3 mt-4 ';
 
@@ -603,7 +612,7 @@ $tilbud = $db->sql(
 
                 searchContainer.appendChild(rowWrapper);
 
-                // Gør det muligt også at kopier rabatkode i søgefelt //
+                // Kopier rabatkoden fra søgeresultatet, markerer brugt i DB og opdaterer "anvendt" //
                 searchContainer.querySelectorAll('.copy-btn').forEach(btn => {
                     btn.addEventListener('click', async (ev) => {
                         const code = btn.getAttribute('data-code');
@@ -684,7 +693,6 @@ $tilbud = $db->sql(
                 }
             });
         }
-
     });
 </script>
 </body>
