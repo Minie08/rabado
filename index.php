@@ -131,7 +131,6 @@ $tilbud = $db->sql(
         [":nu" => $nu]
 );
 ?>
-
 <!DOCTYPE html>
 <html lang="da">
 <head>
@@ -259,7 +258,7 @@ $tilbud = $db->sql(
     </button>
 </div>
 
-<!-- Modal til "tilføj" knappen-->
+<!-- Modal/Pop-up -->
 <div class="modal fade" id="addDiscountModal" tabindex="-1">
     <div class="modal-dialog">
         <form id="discountForm" class="modal-content p-3">
@@ -302,7 +301,7 @@ $tilbud = $db->sql(
         const searchForm = document.querySelector('.search-box');
         const searchContainer = document.getElementById('search-results-container');
 
-        // Dropdown til dynamisk live-search
+        // Opretter dynamisk dropdown live-search //
         const resultsBox = document.createElement('div');
         resultsBox.className = "search-results";
         searchInput.parentNode.appendChild(resultsBox);
@@ -340,7 +339,7 @@ $tilbud = $db->sql(
             });
         }
 
-        // ===== loadDeals(): henter via AJAX fra samme PHP-fil (ajax=1) =====
+        // Henter rabatkoder/tilbud uden reload //
         async function loadDeals() {
             const params = new URLSearchParams({ ajax: 1 });
             if (currentType) params.set('type', currentType);
@@ -383,7 +382,7 @@ $tilbud = $db->sql(
                         </div>
                     `;
 
-                        // copy + mark used
+                        // Kopier og marker koden som "anvendt" //
                         card.querySelector('.discount-code').addEventListener('click', async (ev) => {
                             const btn = ev.currentTarget;
                             const code = btn.getAttribute('data-code');
@@ -436,25 +435,24 @@ $tilbud = $db->sql(
                     dealsContainer.appendChild(col);
                 });
 
-                // opdater "sidst anvendt" i de cards //
                 updateUsedLabels(dealsContainer);
             } catch (err) {
                 console.error("Fejl ved indlæsning af deals:", err);
             }
         }
 
-        // ===== Switch-knapper med toggle =====
+        // Henter den algte type og fremhæver den //
         function toggleType(type) {
             currentType = (currentType === type ? '' : type);
             btnRabatkoder.classList.toggle('active', currentType === 'rabatkoder');
             btnTilbud.classList.toggle('active', currentType === 'tilbud');
-            // hvis user aktivt søger, lad dropdownen være og stadig hent deals (men vi ændrer kun deals)
+
             loadDeals();
         }
         btnRabatkoder.addEventListener('click', () => toggleType('rabatkoder'));
         btnTilbud.addEventListener('click', () => toggleType('tilbud'));
 
-        // ===== Kategori-knapper =====
+        // Kategori knapperne //
         categories.forEach(cat => {
             cat.addEventListener('click', () => {
                 currentCategory = (currentCategory === cat.dataset.id ? '' : cat.dataset.id);
@@ -463,7 +461,7 @@ $tilbud = $db->sql(
             });
         });
 
-        // ===== Live-search (dropdown) =====
+        // Live-search //
         searchInput.addEventListener('input', () => {
             clearTimeout(timer);
             const q = searchInput.value.trim();
@@ -505,7 +503,6 @@ $tilbud = $db->sql(
                                 copyBtn.textContent = '✔';
                                 setTimeout(() => copyBtn.textContent = old, 2000);
 
-                                // Hvis id findes, markér anvendt i db
                                 if (item.id) {
                                     try {
                                         const res2 = await fetch('updateLastUsed.php', {
@@ -514,7 +511,7 @@ $tilbud = $db->sql(
                                             body: `id=${encodeURIComponent(item.id)}`
                                         });
                                         const d2 = await res2.json();
-                                        // dropdown small — vi opdaterer ikke et label her
+
                                     } catch (err) {
                                         console.error('Fejl ved updateLastUsed (dropdown):', err);
                                     }
@@ -540,12 +537,12 @@ $tilbud = $db->sql(
             }, 300);
         });
 
-        // Luk dropdown ved klik udenfor
+        // Lukker dropdown ved klik udenfor //
         document.addEventListener('click', (e) => {
             if (!resultsBox.contains(e.target) && e.target !== searchInput) resultsBox.style.display = 'none';
         });
 
-        // ===== Search (submit) - vis resultater som cards (2/3/4 per række) =====
+        // Viser resultater //
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const q = searchInput.value.trim();
@@ -606,7 +603,7 @@ $tilbud = $db->sql(
 
                 searchContainer.appendChild(rowWrapper);
 
-                // copy-event er også tilføjet i søgefeltet //
+                // Gør det muligt også at kopier rabatkode i søgefelt //
                 searchContainer.querySelectorAll('.copy-btn').forEach(btn => {
                     btn.addEventListener('click', async (ev) => {
                         const code = btn.getAttribute('data-code');
@@ -626,7 +623,7 @@ $tilbud = $db->sql(
                                 });
                                 const d2 = await res2.json();
                                 if (d2.success && d2.timestamp) {
-                                    // find tilhørende label i samme card og opdatér
+
                                     const parentCard = btn.closest('.discount-card');
                                     if (parentCard) {
                                         const label = parentCard.querySelector('.anvendt');
@@ -643,7 +640,6 @@ $tilbud = $db->sql(
                     });
                 });
 
-                // opdater anvendt labels i search-result
                 updateUsedLabels(searchContainer);
             } catch (err) {
                 console.error('Search error:', err);
@@ -653,7 +649,7 @@ $tilbud = $db->sql(
         loadDeals();
         updateUsedLabels();
 
-        // Viser succes/fejl ved klik på "tilføj" btn. //
+        // Viser succes/fejl ved klik på "tilføj" btn //
         const discountForm = document.getElementById('discountForm');
         const discountFormMsg = document.getElementById('discountFormMsg');
 
