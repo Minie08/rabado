@@ -4,90 +4,139 @@
  */
 require "settings/init.php";
 
-$nu = date('Y-m-d');
-$kategoriId = isset($_GET['kategori']) ? $_GET['kategori'] : null;
-$type = isset($_GET['type']) ? $_GET['type'] : null;
 
-// ===== Håndter AJAX-opdatering af rabaAnvendt =====
+$nu = date('Y-m-d');
+$kategoriId = isset($_GET['kategori']) ? $_GET['kategori'] : null;//
+$type       = isset($_GET['type']) ? $_GET['type'] : null;
+
+// Sender data til serveren uden at genindlæse siden med AJAX //
 if (!empty($_POST['id'])) {
     $id = intval($_POST['id']);
-    $db->sql("UPDATE rabatkoder SET rabaAnvendt = NOW() WHERE id = :id", [":id" => $id]);
 
+    // Opdater databasen og sætter tidspunkt for anvendelse af rabatkoden, herunder "kopiering" //
+    $db->sql(
+            "UPDATE rabatkoder SET rabaAnvendt = NOW() WHERE id = :id", [":id" => $id]);
+
+    // Returner svar //
     echo json_encode([
-        "success" => true,
-        "time" => date("H:i d.m.Y")
+            "success" => true,
+            "time" => date("H:i d.m.Y")
     ]);
     exit;
 }
 
-// ===== Håndter AJAX-opslag efter kategorier/typer =====
+// Henter rabatkoder/tilbud, som passer til den valgte kategori //
 if (isset($_GET['ajax'])) {
     $result = [];
 
+    // Når en kategori vælges //
     if ($kategoriId) {
         if ($type === "rabatkoder") {
-            $rabatkoder = $db->sql("SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
-                FROM rabatkoder r
-                JOIN virksomheder v ON r.virkId = v.id
-                JOIN kategorier k ON r.kateId = k.id
-                WHERE r.kateId = :kateId AND r.rabaStart <= :nu AND r.rabaUdloeb >= :nu",
-                [":kateId" => $kategoriId, ":nu" => $nu]
+
+            // Henter kun rabatkoder//
+            $rabatkoder = $db->sql(
+                    "SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
+                 FROM rabatkoder r
+                 JOIN virksomheder v ON r.virkId = v.id
+                 JOIN kategorier k ON r.kateId = k.id
+                 WHERE r.kateId = :kateId 
+                   AND r.rabaStart <= :nu 
+                   AND r.rabaUdloeb >= :nu", [":kateId" => $kategoriId, ":nu" => $nu]
             );
-            foreach ($rabatkoder as $r) $result[] = array_merge((array)$r, ["type"=>"rabat"]);
+
+            // Sætter rabatkoderne i resultatet og marker den med "type = rabat" //
+            foreach ($rabatkoder as $r) {
+                $result[] = array_merge((array)$r, ["type" => "rabat"]);
+            }
+
         } elseif ($type === "tilbud") {
-            $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
-                FROM tilbud t
-                JOIN virksomheder v ON t.virkId = v.id
-                JOIN kategorier k ON t.kateId = k.id
-                WHERE t.kateId = :kateId AND t.tilbStart <= :nu AND t.tilbUdloeb >= :nu",
-                [":kateId" => $kategoriId, ":nu" => $nu]
+
+            // Henter kun tilbud //
+            $tilbud = $db->sql(
+                    "SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
+                 FROM tilbud t
+                 JOIN virksomheder v ON t.virkId = v.id
+                 JOIN kategorier k ON t.kateId = k.id
+                 WHERE t.kateId = :kateId 
+                   AND t.tilbStart <= :nu 
+                   AND t.tilbUdloeb >= :nu",
+                    [":kateId" => $kategoriId, ":nu" => $nu]
             );
-            foreach ($tilbud as $t) $result[] = array_merge((array)$t, ["type"=>"tilbud"]);
+
+            // Sætter tilbuddene i resultatet og marker den med "type = tilbud" //
+            foreach ($tilbud as $t) {
+                $result[] = array_merge((array)$t, ["type" => "tilbud"]);
+            }
+
         } else {
-            $rabatkoder = $db->sql("SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
-                FROM rabatkoder r
-                JOIN virksomheder v ON r.virkId = v.id
-                JOIN kategorier k ON r.kateId = k.id
-                WHERE r.kateId = :kateId AND r.rabaStart <= :nu AND r.rabaUdloeb >= :nu",
-                [":kateId" => $kategoriId, ":nu" => $nu]
+            // Henter både rabatkoder og tilbud //
+            $rabatkoder = $db->sql(
+                    "SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
+                 FROM rabatkoder r
+                 JOIN virksomheder v ON r.virkId = v.id
+                 JOIN kategorier k ON r.kateId = k.id
+                 WHERE r.kateId = :kateId 
+                   AND r.rabaStart <= :nu 
+                   AND r.rabaUdloeb >= :nu",
+                    [":kateId" => $kategoriId, ":nu" => $nu]
             );
-            $tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
-                FROM tilbud t
-                JOIN virksomheder v ON t.virkId = v.id
-                JOIN kategorier k ON t.kateId = k.id
-                WHERE t.kateId = :kateId AND t.tilbStart <= :nu AND t.tilbUdloeb >= :nu",
-                [":kateId" => $kategoriId, ":nu" => $nu]
+
+            $tilbud = $db->sql(
+                    "SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
+                 FROM tilbud t
+                 JOIN virksomheder v ON t.virkId = v.id
+                 JOIN kategorier k ON t.kateId = k.id
+                 WHERE t.kateId = :kateId 
+                   AND t.tilbStart <= :nu 
+                   AND t.tilbUdloeb >= :nu",
+                    [":kateId" => $kategoriId, ":nu" => $nu]
             );
-            foreach ($rabatkoder as $r) $result[] = array_merge((array)$r, ["type"=>"rabat"]);
-            foreach ($tilbud as $t) $result[] = array_merge((array)$t, ["type"=>"tilbud"]);
+
+            // Tilføjer begge til resultatet
+            foreach ($rabatkoder as $r) {
+                $result[] = array_merge((array)$r, ["type" => "rabat"]);
+            }
+            foreach ($tilbud as $t) {
+                $result[] = array_merge((array)$t, ["type" => "tilbud"]);
+            }
         }
     }
+
     echo json_encode($result);
     exit;
 }
 
-// ===== Første load af kategorier og alle deals =====
+// Henter alle kategorier
 $kategorier = $db->sql("SELECT * FROM kategorier ORDER BY id ASC");
-$rabatkoder = $db->sql("SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
-    FROM rabatkoder r
-    JOIN virksomheder v ON r.virkId = v.id
-    JOIN kategorier k ON r.kateId = k.id
-    WHERE r.rabaStart <= :nu AND r.rabaUdloeb >= :nu",
-    [":nu"=>$nu]
+
+// Henter alle aktive rabatkoder
+$rabatkoder = $db->sql(
+        "SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
+     FROM rabatkoder r
+     JOIN virksomheder v ON r.virkId = v.id
+     JOIN kategorier k ON r.kateId = k.id
+     WHERE r.rabaStart <= :nu 
+       AND r.rabaUdloeb >= :nu",
+        [":nu" => $nu]
 );
-$tilbud = $db->sql("SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
-    FROM tilbud t
-    JOIN virksomheder v ON t.virkId = v.id
-    JOIN kategorier k ON t.kateId = k.id
-    WHERE t.tilbStart <= :nu AND t.tilbUdloeb >= :nu",
-    [":nu"=>$nu]
+
+// Hent alle aktive tilbud
+$tilbud = $db->sql(
+        "SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn
+     FROM tilbud t
+     JOIN virksomheder v ON t.virkId = v.id
+     JOIN kategorier k ON t.kateId = k.id
+     WHERE t.tilbStart <= :nu 
+       AND t.tilbUdloeb >= :nu",
+        [":nu" => $nu]
 );
 ?>
+
 <!DOCTYPE html>
 <html lang="da">
 <head>
     <meta charset="utf-8">
-    <title>Rabado - Forside</title>
+    <title>Rabado – Forside</title>
     <meta name="robots" content="index, follow">
     <meta name="author" content="Rabado">
     <meta name="copyright" content="© 2025 Rabado. Alle rettigheder forbeholdes.">
