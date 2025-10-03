@@ -32,7 +32,7 @@ $DB_USER = "root";
 $DB_PASS = "";
 */
 
-define("CONFIG_LIVE", "0"); // 0: Test enviroment || 1: Live enviroment
+define("CONFIG_LIVE", "1"); // 0: Test enviroment || 1: Live enviroment
 
 if(CONFIG_LIVE == 0) {
     $DB_SERVER = "mariadb";
@@ -40,10 +40,10 @@ if(CONFIG_LIVE == 0) {
     $DB_USER = "user";
     $DB_PASS = "password";
 } else if(CONFIG_LIVE == 1) {
-    $DB_SERVER = "";
-    $DB_NAME = "";
-    $DB_USER = "";
-    $DB_PASS = "";
+    $DB_SERVER = "mysql59.unoeuro.com";
+    $DB_NAME = "rabado_dk_db";
+    $DB_USER = "rabado_dk";
+    $DB_PASS = "25dpcDwen63tmagbF4kh";
 }
 
 $db = new db($DB_SERVER, $DB_NAME, $DB_USER, $DB_PASS);
