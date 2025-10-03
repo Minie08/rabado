@@ -7,8 +7,10 @@ require "settings/init.php";
 if (!empty($_POST['id'])) {
     $id = intval($_POST['id']);
 
+    // Opdaterer databasen //
     $db->sql("UPDATE rabatkoder SET rabaAnvendt = NOW() WHERE id = :id", [":id" => $id]);
 
+    // Henter den opdaterede tid fra databasen //
     $row = $db->sql("SELECT rabaAnvendt FROM rabatkoder WHERE id = :id", [":id" => $id])[0];
     $timestamp = strtotime($row->rabaAnvendt);
 
