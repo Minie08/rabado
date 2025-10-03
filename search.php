@@ -15,6 +15,7 @@ if ($q === '') {
 
 $nu = date('Y-m-d');
 
+// Matcher søgning og henter rabatkoder/tilbud //
 $rabatkoder = $db->sql("
     SELECT r.id, r.rabaTitel AS titel, r.rabaKode AS kode, r.rabaBeskrivelse AS beskrivelse, v.virkNavn, v.virkLogo, v.virkLink, 'rabat' AS type
     FROM rabatkoder r

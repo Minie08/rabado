@@ -13,7 +13,6 @@ $nu = date('Y-m-d');
 $rabatkoder = [];
 $tilbud = [];
 
-// Hent rabatkoder hvis kategori eller type matcher
 if (!$type || $type === "rabatkoder") {
     $sql = "SELECT r.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn 
             FROM rabatkoder r
@@ -30,7 +29,6 @@ if (!$type || $type === "rabatkoder") {
     $rabatkoder = $db->sql($sql, $params);
 }
 
-// Hent tilbud hvis kategori eller type matcher
 if (!$type || $type === "tilbud") {
     $sql = "SELECT t.*, v.virkNavn, v.virkLogo, v.virkLink, k.kateNavn 
             FROM tilbud t
@@ -46,13 +44,13 @@ if (!$type || $type === "tilbud") {
 
     $tilbud = $db->sql($sql, $params);
 }
-
-// Marker type for JS
+// Marker rabatkoderne med typen "rabat" //
 $rabatkoder = array_map(function($r) {
     $r->type = "rabat";
     return $r;
 }, $rabatkoder);
 
+// Marker rtilbudene med typen "tilbud" //
 $tilbud = array_map(function($t) {
     $t->type = "tilbud";
     return $t;
